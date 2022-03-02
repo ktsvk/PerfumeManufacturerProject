@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace PerfumeManufacturerProject.Contracts.Profiles.Requests
+namespace PerfumeManufacturerProject.Contracts.Roles.Requests
 {
-    public sealed class UpdateProfileRequest
+    public sealed class UpdateRoleRequest
     {
         [Required]
         public string Id { get; set; }

@@ -3,16 +3,17 @@ using PerfumeManufacturerProject.Business.Interfaces.Exceptions;
 using PerfumeManufacturerProject.Business.Interfaces.Exceptions.Auth;
 using PerfumeManufacturerProject.Business.Interfaces.Models.Auth;
 using PerfumeManufacturerProject.Business.Interfaces.Services;
+using PerfumeManufacturerProject.Data.Interfaces.Models;
 using System.Threading.Tasks;
 
 namespace PerfumeManufacturerProject.Business.Services
 {
     public class AuthService : IAuthService
     {
-        private readonly UserManager<IdentityUser> _userManager;
-        private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
 
-        public AuthService(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager)
+        public AuthService(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -34,7 +35,7 @@ namespace PerfumeManufacturerProject.Business.Services
 
         public async Task<LoginResult> RegisterAsync(string username, string password)
         {
-            var user = new IdentityUser { UserName = username };
+            var user = new ApplicationUser { UserName = username };
             var result = await _userManager.CreateAsync(user, password);
             if (result.Succeeded)
             {

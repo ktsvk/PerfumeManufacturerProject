@@ -1,4 +1,6 @@
-﻿namespace PerfumeManufacturerProject.Business.Interfaces.Models
+﻿using PerfumeManufacturerProject.Business.Interfaces.Models.Roles;
+
+namespace PerfumeManufacturerProject.Business.Interfaces.Models.Users
 {
     public sealed class UserModel
     {
@@ -6,7 +8,6 @@
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string UserName { get; set; }
-
-        public ProfileModel Profile { get; set; }
+        public RoleModel Role { get; set; }
     }
 }

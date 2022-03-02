@@ -10,9 +10,7 @@ namespace PerfumeManufacturerProject.Contracts.Users.Requests
         public string FirstName { get; set; }
         [Required]
         public string LastName { get; set; }
-        //[Required]
-        //public string Password { get; set; } // remove this if password dont updating
         [Required]
-        public string ProfileName { get; set; }
+        public string RoleName { get; set; }
     }
 }

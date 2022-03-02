@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 
-namespace PerfumeManufacturerProject.Business.Interfaces.Models
+namespace PerfumeManufacturerProject.Contracts.Roles.Responses
 {
-    public class ProfileModel
+    public sealed class RoleResponse
     {
         public string Id { get; set; }
         public string Name { get; set; }

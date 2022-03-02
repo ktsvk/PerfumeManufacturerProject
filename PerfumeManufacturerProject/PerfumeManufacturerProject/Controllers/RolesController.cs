@@ -6,21 +6,21 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using PerfumeManufacturerProject.Business.Interfaces.Services;
-using PerfumeManufacturerProject.Contracts.Profiles.Requests;
-using PerfumeManufacturerProject.Contracts.Profiles.Responses;
+using PerfumeManufacturerProject.Contracts.Roles.Requests;
+using PerfumeManufacturerProject.Contracts.Roles.Responses;
 
 namespace PerfumeManufacturerProject.Controllers
 {
     [Authorize]
     [ApiController]
     [Route("[controller]")]
-    public class ProfilesController : ControllerBase
+    public class RolesController : ControllerBase
     {
-        private readonly IProfilesService _profilesService;
+        private readonly IRolesService _profilesService;
         private readonly IMapper _mapper;
-        private readonly ILogger<ProfilesController> _logger;
+        private readonly ILogger<RolesController> _logger;
 
-        public ProfilesController(IProfilesService profilesService, IMapper mapper, ILogger<ProfilesController> logger)
+        public RolesController(IRolesService profilesService, IMapper mapper, ILogger<RolesController> logger)
         {
             _profilesService = profilesService;
             _mapper = mapper;
@@ -33,7 +33,7 @@ namespace PerfumeManufacturerProject.Controllers
             try
             {
                 var result = await _profilesService.GetAsync();
-                return Ok(_mapper.Map<IEnumerable<ProfileResponse>>(result));
+                return Ok(_mapper.Map<IEnumerable<RoleResponse>>(result));
             }
             catch (Exception e)
             {
@@ -42,12 +42,12 @@ namespace PerfumeManufacturerProject.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateAsync([FromBody] CreateProfileRequest request)
+        public async Task<IActionResult> CreateAsync([FromBody] CreateRoleRequest request)
         {
             try
             {
                 var result = await _profilesService.CreateAsync(request.Name);
-                return Ok(_mapper.Map<ProfileResponse>(result));
+                return Ok(_mapper.Map<RoleResponse>(result));
             }
             catch (Exception e)
             {
@@ -56,7 +56,7 @@ namespace PerfumeManufacturerProject.Controllers
         }
 
         [HttpPut]
-        public async Task<IActionResult> UpdateAsync([FromBody] UpdateProfileRequest request)
+        public async Task<IActionResult> UpdateAsync([FromBody] UpdateRoleRequest request)
         {
             try
             {

@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,7 +21,6 @@ namespace PerfumeManufacturerProject.DependencyConfiguration
         {
             AddApplicationExtensions(services);
             AddDataExtensions(services, config);
-            AddSettingsExtensions(services);
 
             AddLoggerConfiguration(services, config);
             AddSwaggerConfiguration(services);
@@ -34,15 +32,13 @@ namespace PerfumeManufacturerProject.DependencyConfiguration
         {
             services.AddTransient<IAuthService, AuthService>();
             services.AddTransient<IUsersService, UsersService>();
-            services.AddTransient<IProfilesService, ProfilesService>();
+            services.AddTransient<IRolesService, RolesService>();
         }
 
         public static void AddDataExtensions(IServiceCollection services, IConfiguration config)
         {
             services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(config.GetConnectionString("DefaultConnection")));
-
-            services.AddDbContext<AuthDbContext>(options => options.UseSqlServer(config.GetConnectionString("AuthConnection")));
-            services.AddIdentity<IdentityUser, IdentityRole>(options =>
+            services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
             {
                 options.SignIn.RequireConfirmedAccount = false;
                 options.Password.RequireDigit = false;
@@ -51,7 +47,7 @@ namespace PerfumeManufacturerProject.DependencyConfiguration
                 options.Password.RequireNonAlphanumeric = false;
                 options.Password.RequireUppercase = false;
             })
-                .AddEntityFrameworkStores<AuthDbContext>();
+                .AddEntityFrameworkStores<ApplicationDbContext>();
 
             services.ConfigureApplicationCookie(options =>
             {
@@ -64,11 +60,6 @@ namespace PerfumeManufacturerProject.DependencyConfiguration
                     }
                 };
             });
-
-        }
-
-        public static void AddSettingsExtensions(IServiceCollection services)
-        {
 
         }
 

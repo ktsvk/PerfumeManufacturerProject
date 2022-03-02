@@ -3,13 +3,15 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using PerfumeManufacturerProject.Business.Interfaces.Services;
 using PerfumeManufacturerProject.Contracts.Admin.Responses;
-using PerfumeManufacturerProject.Contracts.Users.Requests;
+using PerfumeManufacturerProject.Contracts.Admin.Requests;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 
 namespace PerfumeManufacturerProject.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("[controller]")]
     public class AdminController : ControllerBase
@@ -54,7 +56,7 @@ namespace PerfumeManufacturerProject.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateAsync([FromBody] CreateUserRequest request)
+        public async Task<IActionResult> CreateAsync([FromBody] CreateAdminRequest request)
         {
             try
             {
@@ -67,7 +69,33 @@ namespace PerfumeManufacturerProject.Controllers
             }
         }
 
-        //edit, delete
+        [HttpPut]
+        public async Task<IActionResult> UpdateAsync([FromBody] UpdateAdminRequest request)
+        {
+            try
+            {
+                await _usersService.UpdateAdminAsync(request.Id, request.FirstName, request.LastName, request.UserName, request.OldPassword, request.NewPassword);
+                return NoContent();
+            }
+            catch (Exception e)
+            {
+                return HandleAdminErrors(e);
+            }
+        }
+
+        [HttpDelete]
+        public async Task<IActionResult> DeleteAsync(string id)
+        {
+            try
+            {
+                await _usersService.DeleteAsync(id);
+                return NoContent();
+            }
+            catch (Exception e)
+            {
+                return HandleAdminErrors(e);
+            }
+        }
 
         private IActionResult HandleAdminErrors(Exception exception)
         {

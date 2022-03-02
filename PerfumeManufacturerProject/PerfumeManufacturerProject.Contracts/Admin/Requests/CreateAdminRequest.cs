@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace PerfumeManufacturerProject.Contracts.Users.Requests
+namespace PerfumeManufacturerProject.Contracts.Admin.Requests
 {
-    public sealed class CreateUserRequest
+    public sealed class CreateAdminRequest
     {
         [Required]
         public string FirstName { get; set; }
@@ -12,7 +12,5 @@ namespace PerfumeManufacturerProject.Contracts.Users.Requests
         public string UserName { get; set; }
         [Required]
         public string Password { get; set; }
-        [Required]
-        public string RoleName { get; set; }
     }
 }

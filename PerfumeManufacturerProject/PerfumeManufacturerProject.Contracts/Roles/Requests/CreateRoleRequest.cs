@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace PerfumeManufacturerProject.Contracts.Profiles.Requests
+namespace PerfumeManufacturerProject.Contracts.Roles.Requests
 {
-    public sealed class CreateProfileRequest
+    public sealed class CreateRoleRequest
     {
         [Required]
         public string Name { get; set; }

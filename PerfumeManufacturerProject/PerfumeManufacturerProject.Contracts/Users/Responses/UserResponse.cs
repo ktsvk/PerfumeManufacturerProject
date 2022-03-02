@@ -1,4 +1,4 @@
-﻿using PerfumeManufacturerProject.Contracts.Profiles.Responses;
+﻿using PerfumeManufacturerProject.Contracts.Roles.Responses;
 
 namespace PerfumeManufacturerProject.Contracts.Users.Responses
 {
@@ -8,6 +8,6 @@ namespace PerfumeManufacturerProject.Contracts.Users.Responses
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string UserName { get; set; }
-        public ProfileResponse Profile { get; set; }
+        public RoleResponse Role { get; set; }
     }
 }

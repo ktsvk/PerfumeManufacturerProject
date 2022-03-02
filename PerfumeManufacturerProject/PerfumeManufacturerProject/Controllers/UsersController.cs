@@ -60,7 +60,7 @@ namespace PerfumeManufacturerProject.Controllers
         {
             try
             {
-                var result = await _usersService.CreateAsync(request.UserName, request.Password, request.FirstName, request.LastName, request.ProfileName);
+                var result = await _usersService.CreateAsync(request.UserName, request.Password, request.FirstName, request.LastName, request.RoleName);
                 return Ok(_mapper.Map<UserResponse>(result));
             }
             catch (Exception e)
@@ -74,7 +74,7 @@ namespace PerfumeManufacturerProject.Controllers
         {
             try
             {
-                await _usersService.UpdateAsync(request.Id, request.FirstName, request.LastName, request.ProfileName);
+                await _usersService.UpdateAsync(request.Id, request.FirstName, request.LastName, request.RoleName);
                 return NoContent();
             }
             catch (Exception e)
