@@ -7,6 +7,7 @@ using PerfumeManufacturerProject.Contracts.Users.Requests;
 using PerfumeManufacturerProject.Contracts.Users.Responses;
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace PerfumeManufacturerProject.Controllers
@@ -28,6 +29,7 @@ namespace PerfumeManufacturerProject.Controllers
         }
 
         [HttpGet("{id}")]
+        [ProducesResponseType(typeof(UserResponse), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetAsync(string id)
         {
             try
@@ -42,6 +44,7 @@ namespace PerfumeManufacturerProject.Controllers
         }
 
         [HttpGet]
+        [ProducesResponseType(typeof(IEnumerable<UserResponse>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetAsync()
         {
             try
@@ -56,6 +59,7 @@ namespace PerfumeManufacturerProject.Controllers
         }
 
         [HttpPost]
+        [ProducesResponseType(typeof(UserResponse), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> CreateAsync([FromBody] CreateUserRequest request)
         {
             try
@@ -70,6 +74,7 @@ namespace PerfumeManufacturerProject.Controllers
         }
 
         [HttpPut]
+        [ProducesResponseType(typeof(void), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> UpdateAsync([FromBody] UpdateUserRequest request)
         {
             try
@@ -84,6 +89,7 @@ namespace PerfumeManufacturerProject.Controllers
         }
 
         [HttpDelete("{id}")]
+        [ProducesResponseType(typeof(void), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> DeleteAsync(string id)
         {
             try

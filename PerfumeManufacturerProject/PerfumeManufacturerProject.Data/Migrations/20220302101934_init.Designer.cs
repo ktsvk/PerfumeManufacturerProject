@@ -10,7 +10,7 @@ using PerfumeManufacturerProject.Data.EF;
 namespace PerfumeManufacturerProject.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20220301153010_init")]
+    [Migration("20220302101934_init")]
     partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

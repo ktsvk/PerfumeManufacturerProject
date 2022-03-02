@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
@@ -28,6 +29,7 @@ namespace PerfumeManufacturerProject.Controllers
         }
 
         [HttpGet]
+        [ProducesResponseType(typeof(IEnumerable<RoleResponse>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetAsync()
         {
             try
@@ -42,6 +44,7 @@ namespace PerfumeManufacturerProject.Controllers
         }
 
         [HttpPost]
+        [ProducesResponseType(typeof(RoleResponse), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> CreateAsync([FromBody] CreateRoleRequest request)
         {
             try
@@ -56,6 +59,7 @@ namespace PerfumeManufacturerProject.Controllers
         }
 
         [HttpPut]
+        [ProducesResponseType(typeof(void), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> UpdateAsync([FromBody] UpdateRoleRequest request)
         {
             try
@@ -70,6 +74,7 @@ namespace PerfumeManufacturerProject.Controllers
         }
 
         [HttpDelete("{id}")]
+        [ProducesResponseType(typeof(void), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> DeleteAsync(string id)
         {
             try

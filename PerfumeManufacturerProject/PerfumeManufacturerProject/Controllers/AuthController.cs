@@ -5,6 +5,7 @@ using PerfumeManufacturerProject.Business.Interfaces.Services;
 using PerfumeManufacturerProject.Contracts.Auth.Requests;
 using PerfumeManufacturerProject.Contracts.Auth.Responses;
 using System;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace PerfumeManufacturerProject.Controllers
@@ -25,6 +26,7 @@ namespace PerfumeManufacturerProject.Controllers
         }
 
         [HttpPost("login")]
+        [ProducesResponseType(typeof(LoginResponse), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> LoginAsync([FromBody] LoginRequest request)
         {
             try
@@ -39,6 +41,7 @@ namespace PerfumeManufacturerProject.Controllers
         }
 
         [HttpPost("register")]
+        [ProducesResponseType(typeof(LoginResponse), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> RegisterAsync([FromBody] LoginRequest request)
         {
             try
@@ -53,12 +56,13 @@ namespace PerfumeManufacturerProject.Controllers
         }
 
         [HttpDelete("login")]
+        [ProducesResponseType(typeof(void), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> LogoutAsync()
         {
             try
             {
                 await _authService.LogoutAsync();
-                return Ok();
+                return NoContent();
             }
             catch (Exception e)
             {

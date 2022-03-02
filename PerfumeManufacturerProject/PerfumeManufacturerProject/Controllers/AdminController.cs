@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using System.Net;
 
 namespace PerfumeManufacturerProject.Controllers
 {
@@ -28,6 +29,7 @@ namespace PerfumeManufacturerProject.Controllers
         }
 
         [HttpGet("{id}")]
+        [ProducesResponseType(typeof(AdminResponse), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetAsync(string id)
         {
             try
@@ -42,6 +44,7 @@ namespace PerfumeManufacturerProject.Controllers
         }
 
         [HttpGet]
+        [ProducesResponseType(typeof(IEnumerable<AdminResponse>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetAsync()
         {
             try
@@ -56,6 +59,7 @@ namespace PerfumeManufacturerProject.Controllers
         }
 
         [HttpPost]
+        [ProducesResponseType(typeof(AdminResponse), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> CreateAsync([FromBody] CreateAdminRequest request)
         {
             try
@@ -70,6 +74,7 @@ namespace PerfumeManufacturerProject.Controllers
         }
 
         [HttpPut]
+        [ProducesResponseType(typeof(void), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> UpdateAsync([FromBody] UpdateAdminRequest request)
         {
             try
@@ -84,6 +89,7 @@ namespace PerfumeManufacturerProject.Controllers
         }
 
         [HttpDelete]
+        [ProducesResponseType(typeof(void), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> DeleteAsync(string id)
         {
             try
