@@ -5,6 +5,11 @@ namespace PerfumeManufacturerProject.Data.Interfaces.Models
 {
     public class ApplicationRole : IdentityRole
     {
-        public IEnumerable<Permission> Permissions { get; set; }
+        public ICollection<Permission> Permissions { get; set; }
+
+        public ApplicationRole()
+        {
+            Permissions = new List<Permission>();
+        }
     }
 }

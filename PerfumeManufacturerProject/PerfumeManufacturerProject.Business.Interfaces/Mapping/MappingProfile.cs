@@ -22,6 +22,7 @@ namespace PerfumeManufacturerProject.Business.Interfaces.Mapping
         {
             CreateMap<ApplicationRole, RoleModel>();
             CreateMap<ApplicationUser, UserModel>();
+            CreateMap<Permission, PermissionModel>();
         }
 
         private void ServiceResultsToOutputContractMaps()
@@ -31,6 +32,7 @@ namespace PerfumeManufacturerProject.Business.Interfaces.Mapping
             CreateMap<RoleModel, RoleResponse>();
             CreateMap<UserModel, UserResponse>();
             CreateMap<UserModel, AdminResponse>();
+            CreateMap<PermissionModel, PermissionResponse>();
         }
     }
 }

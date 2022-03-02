@@ -17,13 +17,13 @@ namespace PerfumeManufacturerProject.Controllers
     [Route("[controller]")]
     public class RolesController : ControllerBase
     {
-        private readonly IRolesService _profilesService;
+        private readonly IRolesService _rolesService;
         private readonly IMapper _mapper;
         private readonly ILogger<RolesController> _logger;
 
-        public RolesController(IRolesService profilesService, IMapper mapper, ILogger<RolesController> logger)
+        public RolesController(IRolesService rolesService, IMapper mapper, ILogger<RolesController> logger)
         {
-            _profilesService = profilesService;
+            _rolesService = rolesService;
             _mapper = mapper;
             _logger = logger;
         }
@@ -34,7 +34,7 @@ namespace PerfumeManufacturerProject.Controllers
         {
             try
             {
-                var result = await _profilesService.GetAsync();
+                var result = await _rolesService.GetAsync();
                 return Ok(_mapper.Map<IEnumerable<RoleResponse>>(result));
             }
             catch (Exception e)
@@ -49,7 +49,7 @@ namespace PerfumeManufacturerProject.Controllers
         {
             try
             {
-                var result = await _profilesService.CreateAsync(request.Name);
+                var result = await _rolesService.CreateAsync(request.Name);
                 return Ok(_mapper.Map<RoleResponse>(result));
             }
             catch (Exception e)
@@ -64,7 +64,7 @@ namespace PerfumeManufacturerProject.Controllers
         {
             try
             {
-                await _profilesService.UpdateAsync(request.Id, request.Name);
+                await _rolesService.UpdateAsync(request.Id, request.Name);
                 return NoContent();
             }
             catch (Exception e)
@@ -79,7 +79,52 @@ namespace PerfumeManufacturerProject.Controllers
         {
             try
             {
-                await _profilesService.DeleteAsync(id);
+                await _rolesService.DeleteAsync(id);
+                return NoContent();
+            }
+            catch (Exception e)
+            {
+                return HandleProfilesErrors(e);
+            }
+        }
+
+        [HttpGet("permissions")]
+        [ProducesResponseType(typeof(IEnumerable<PermissionResponse>), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> GetPermissionsAsync()
+        {
+            try
+            {
+                var result = await _rolesService.GetPermissionsAsync();
+                return Ok(_mapper.Map<IEnumerable<PermissionResponse>>(result));
+            }
+            catch (Exception e)
+            {
+                return HandleProfilesErrors(e);
+            }
+        }
+
+        [HttpPost("permissions")]
+        [ProducesResponseType(typeof(IEnumerable<PermissionResponse>), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> AddPermissionsAsync([FromBody] AddPermissionRequest request)
+        {
+            try
+            {
+                await _rolesService.AddPermissionAsync(request.RoleId, request.PermissionId);
+                return NoContent();
+            }
+            catch (Exception e)
+            {
+                return HandleProfilesErrors(e);
+            }
+        }
+
+        [HttpDelete("permissions")]
+        [ProducesResponseType(typeof(IEnumerable<PermissionResponse>), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> DeletePermissionsAsync([FromBody] AddPermissionRequest request)
+        {
+            try
+            {
+                await _rolesService.DeletePermissionAsync(request.RoleId, request.PermissionId);
                 return NoContent();
             }
             catch (Exception e)

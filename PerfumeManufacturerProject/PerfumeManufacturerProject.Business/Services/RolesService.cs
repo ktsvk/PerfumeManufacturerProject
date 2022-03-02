@@ -4,27 +4,37 @@ using Microsoft.EntityFrameworkCore;
 using PerfumeManufacturerProject.Business.Interfaces.Exceptions;
 using PerfumeManufacturerProject.Business.Interfaces.Models.Roles;
 using PerfumeManufacturerProject.Business.Interfaces.Services;
+using PerfumeManufacturerProject.Data.EF;
 using PerfumeManufacturerProject.Data.Interfaces.Models;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace PerfumeManufacturerProject.Business.Services
 {
     public class RolesService : IRolesService
     {
+        private readonly ApplicationDbContext _context;
         private readonly RoleManager<ApplicationRole> _roleManager;
         private readonly IMapper _mapper;
 
-        public RolesService(RoleManager<ApplicationRole> roleManager, IMapper mapper)
+        public RolesService(ApplicationDbContext context, RoleManager<ApplicationRole> roleManager, IMapper mapper)
         {
+            _context = context;
             _roleManager = roleManager;
             _mapper = mapper;
         }
 
         public async Task<IEnumerable<RoleModel>> GetAsync()
         {
-            var roles = await _roleManager.Roles.ToListAsync();
+            var roles = await _roleManager.Roles.Include(x => x.Permissions).ToListAsync();
             return _mapper.Map<IEnumerable<RoleModel>>(roles);
+        }
+
+        public async Task<IEnumerable<PermissionModel>> GetPermissionsAsync()
+        {
+            var permissions = await _context.Permissions.ToListAsync();
+            return _mapper.Map<IEnumerable<PermissionModel>>(permissions);
         }
 
         public async Task<RoleModel> CreateAsync(string name)
@@ -52,14 +62,22 @@ namespace PerfumeManufacturerProject.Business.Services
             await _roleManager.DeleteAsync(role);
         }
 
-        public Task AddPermissionAsync(string id, string name)
+        public async Task AddPermissionAsync(string roleId, string permissionId)
         {
-            throw new System.NotImplementedException();
+            var role = await _roleManager.Roles.Include(x => x.Permissions).FirstOrDefaultAsync(x => x.Id == roleId) ?? throw new RoleNotFoundException(roleId);
+            var permission = await _context.Permissions.FirstOrDefaultAsync(x => x.Id.ToString() == permissionId) ?? throw new PermissionNotFoundException(permissionId);
+
+            role.Permissions.Add(permission);
+            await _roleManager.UpdateAsync(role);
         }
         
-        public Task DeletePermissionAsync(string id, string name)
+        public async Task DeletePermissionAsync(string roleId, string permissionId)
         {
-            throw new System.NotImplementedException();
+            var role = await _roleManager.Roles.Include(x => x.Permissions).FirstOrDefaultAsync(x => x.Id == roleId) ?? throw new RoleNotFoundException(roleId);
+            var permission = await _context.Permissions.FirstOrDefaultAsync(x => x.Id.ToString() == permissionId) ?? throw new PermissionNotFoundException(permissionId);
+
+            role.Permissions.Remove(permission);
+            await _roleManager.UpdateAsync(role);
         }
     }
 }

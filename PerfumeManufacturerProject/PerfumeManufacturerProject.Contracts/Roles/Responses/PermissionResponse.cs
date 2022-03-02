@@ -2,10 +2,9 @@
 
 namespace PerfumeManufacturerProject.Contracts.Roles.Responses
 {
-    public sealed class RoleResponse
+    public sealed class PermissionResponse
     {
         public string Id { get; set; }
         public string Name { get; set; }
-        public IEnumerable<PermissionResponse> Permissions { get; set; }
     }
 }
