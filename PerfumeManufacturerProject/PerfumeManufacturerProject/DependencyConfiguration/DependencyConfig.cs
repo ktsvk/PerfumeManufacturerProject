@@ -51,6 +51,8 @@ namespace PerfumeManufacturerProject.DependencyConfiguration
 
             services.ConfigureApplicationCookie(options =>
             {
+                options.Cookie.Name = "PerfumeAppCookie";
+                options.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.None;
                 options.Events = new CookieAuthenticationEvents
                 {
                     OnRedirectToLogin = ctx =>
@@ -60,7 +62,6 @@ namespace PerfumeManufacturerProject.DependencyConfiguration
                     }
                 };
             });
-
         }
 
         private static void AddLoggerConfiguration(this IServiceCollection services, IConfiguration config)
