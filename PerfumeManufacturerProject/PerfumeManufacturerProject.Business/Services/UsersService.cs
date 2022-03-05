@@ -127,9 +127,7 @@ namespace PerfumeManufacturerProject.Business.Services
 
             user.FirstName = string.IsNullOrEmpty(firstName) ? user.FirstName : firstName;
             user.LastName = string.IsNullOrEmpty(lastName) ? user.LastName : lastName;
-            //user.UserName = string.IsNullOrEmpty(userName) ? user.UserName : userName;
             await _userManager.UpdateAsync(user);
-
             await _userManager.SetUserNameAsync(user, userName);
         }
 
