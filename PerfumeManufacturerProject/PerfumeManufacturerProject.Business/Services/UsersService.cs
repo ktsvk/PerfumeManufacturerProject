@@ -86,6 +86,7 @@ namespace PerfumeManufacturerProject.Business.Services
             if (result.Succeeded)
             {
                 await _userManager.AddToRoleAsync(user, role.Name);
+                await _userManager.UpdateAsync(user);
 
                 var userModel = _mapper.Map<UserModel>(user);
                 userModel.Role = _mapper.Map<RoleModel>(role);
@@ -127,8 +128,8 @@ namespace PerfumeManufacturerProject.Business.Services
 
             user.FirstName = string.IsNullOrEmpty(firstName) ? user.FirstName : firstName;
             user.LastName = string.IsNullOrEmpty(lastName) ? user.LastName : lastName;
-            await _userManager.UpdateAsync(user);
             await _userManager.SetUserNameAsync(user, userName);
+            await _userManager.UpdateAsync(user);
         }
 
         public async Task DeleteAsync(string id)

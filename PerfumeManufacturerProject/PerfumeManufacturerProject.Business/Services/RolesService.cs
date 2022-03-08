@@ -53,6 +53,7 @@ namespace PerfumeManufacturerProject.Business.Services
             var role = await _roleManager.FindByIdAsync(id) ?? throw new RoleNotFoundException(id);
 
             await _roleManager.SetRoleNameAsync(role, name);
+            await _roleManager.UpdateAsync(role);
         }
 
         public async Task DeleteAsync(string id) // if users with this role exists throw error
