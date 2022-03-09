@@ -79,7 +79,7 @@ namespace PerfumeManufacturerProject.Controllers
         {
             try
             {
-                await _usersService.UpdateAsync(request.Id, request.FirstName, request.LastName, request.RoleName);
+                await _usersService.UpdateAsync(request.Id, request.FirstName, request.LastName, request.UserName, request.Password, request.RoleName);
                 return NoContent();
             }
             catch (Exception e)

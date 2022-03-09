@@ -79,7 +79,7 @@ namespace PerfumeManufacturerProject.Controllers
         {
             try
             {
-                await _usersService.UpdateAdminAsync(request.Id, request.FirstName, request.LastName, request.UserName, request.OldPassword, request.NewPassword);
+                await _usersService.UpdateAdminAsync(request.Id, request.FirstName, request.LastName, request.UserName, request.Password);
                 return NoContent();
             }
             catch (Exception e)
@@ -88,7 +88,7 @@ namespace PerfumeManufacturerProject.Controllers
             }
         }
 
-        [HttpDelete]
+        [HttpDelete("{id}")]
         [ProducesResponseType(typeof(void), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> DeleteAsync(string id)
         {

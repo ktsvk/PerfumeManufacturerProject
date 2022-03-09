@@ -95,9 +95,15 @@ namespace PerfumeManufacturerProject.Business.Services
             throw new ErrorDuringRegisterException(result.Errors);
         }
 
-        public async Task UpdateAsync(string id, string firstName, string lastName, string roleName)
+        public async Task UpdateAsync(string id, string firstName, string lastName, string userName, string password, string roleName)
         {
             var user = await _userManager.FindByIdAsync(id) ?? throw new UserNotFoundException(id);
+
+            if (!string.IsNullOrEmpty(password))
+            {
+                await _userManager.RemovePasswordAsync(user);
+                await _userManager.AddPasswordAsync(user, password);
+            }
 
             if (!string.IsNullOrEmpty(roleName))
             {
@@ -110,20 +116,18 @@ namespace PerfumeManufacturerProject.Business.Services
 
             user.FirstName = string.IsNullOrEmpty(firstName) ? user.FirstName : firstName;
             user.LastName = string.IsNullOrEmpty(lastName) ? user.LastName : lastName;
+            await _userManager.SetUserNameAsync(user, userName);
             await _userManager.UpdateAsync(user);
         }
 
-        public async Task UpdateAdminAsync(string id, string firstName, string lastName, string userName, string oldPassword, string newPassword)
+        public async Task UpdateAdminAsync(string id, string firstName, string lastName, string userName, string password)
         {
             var user = await _userManager.FindByIdAsync(id) ?? throw new UserNotFoundException(id);
 
-            if (!string.IsNullOrEmpty(oldPassword) && !string.IsNullOrEmpty(newPassword))
+            if (!string.IsNullOrEmpty(password))
             {
-                var result = await _userManager.ChangePasswordAsync(user, oldPassword, newPassword);
-                if (!result.Succeeded)
-                {
-                    throw new ErrorDuringRegisterException(result.Errors);
-                }
+                await _userManager.RemovePasswordAsync(user);
+                await _userManager.AddPasswordAsync(user, password);
             }
 
             user.FirstName = string.IsNullOrEmpty(firstName) ? user.FirstName : firstName;
