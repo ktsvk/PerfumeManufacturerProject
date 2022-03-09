@@ -7,6 +7,7 @@ namespace PerfumeManufacturerProject.Business.Interfaces.Services
     {
         Task<LoginResult> LoginAsync(string username, string password);
         Task<LoginResult> RegisterAsync(string username, string password);
+        Task<LoginResult> GetMeAsync();
         Task LogoutAsync();
     }
 }

@@ -45,6 +45,14 @@ namespace PerfumeManufacturerProject.Business.Services
             throw new ErrorDuringRegisterException(result.Errors);
         }
 
+        public async Task<LoginResult> GetMeAsync()
+        {
+            var userName = _signInManager.Context.User.Identity.Name;
+            var user = await _userManager.FindByNameAsync(userName) ?? throw new UserNotFoundException(userName);
+
+            return new LoginResult { Id = user.Id, UserName = user.UserName };
+        }
+
         public async Task LogoutAsync() =>
             await _signInManager.SignOutAsync();
     }

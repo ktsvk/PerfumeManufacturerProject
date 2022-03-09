@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using PerfumeManufacturerProject.Business.Interfaces.Services;
@@ -63,6 +64,22 @@ namespace PerfumeManufacturerProject.Controllers
             {
                 await _authService.LogoutAsync();
                 return NoContent();
+            }
+            catch (Exception e)
+            {
+                return HandleAuthErrors(e);
+            }
+        }
+
+        [Authorize]
+        [HttpGet("me")]
+        [ProducesResponseType(typeof(LoginResponse), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> GetMeAsync()
+        {
+            try
+            {
+                var result = await _authService.GetMeAsync();
+                return Ok(result);
             }
             catch (Exception e)
             {
