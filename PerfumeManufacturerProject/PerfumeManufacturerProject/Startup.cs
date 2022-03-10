@@ -32,10 +32,6 @@ namespace PerfumeManufacturerProject
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "PerfumeManufacturerProject v1"));
             }
 
-            app.UseHttpsRedirection();
-
-            app.UseRouting();
-
             var origins = Configuration["AllowedOrigins"].Split(',');
             app.UseCors(builder =>
             {
@@ -44,6 +40,10 @@ namespace PerfumeManufacturerProject
                 builder.AllowAnyHeader();
                 builder.AllowCredentials();
             });
+
+            app.UseHttpsRedirection();
+
+            app.UseRouting();
 
             app.UseAuthentication();
             app.UseAuthorization();
