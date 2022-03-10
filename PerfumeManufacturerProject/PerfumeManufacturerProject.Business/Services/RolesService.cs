@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using PerfumeManufacturerProject.Business.Interfaces.Exceptions;
+using PerfumeManufacturerProject.Business.Interfaces.Exceptions.Roles;
 using PerfumeManufacturerProject.Business.Interfaces.Models.Roles;
 using PerfumeManufacturerProject.Business.Interfaces.Services;
 using PerfumeManufacturerProject.Data.EF;
@@ -16,13 +17,15 @@ namespace PerfumeManufacturerProject.Business.Services
     {
         private readonly ApplicationDbContext _context;
         private readonly RoleManager<ApplicationRole> _roleManager;
+        private readonly UserManager<ApplicationUser> _usersManager;
         private readonly IMapper _mapper;
 
-        public RolesService(ApplicationDbContext context, RoleManager<ApplicationRole> roleManager, IMapper mapper)
+        public RolesService(ApplicationDbContext context, RoleManager<ApplicationRole> roleManager, IMapper mapper, UserManager<ApplicationUser> usersManager)
         {
             _context = context;
             _roleManager = roleManager;
             _mapper = mapper;
+            _usersManager = usersManager;
         }
 
         public async Task<IEnumerable<RoleModel>> GetAsync()
@@ -56,9 +59,14 @@ namespace PerfumeManufacturerProject.Business.Services
             await _roleManager.UpdateAsync(role);
         }
 
-        public async Task DeleteAsync(string id) // if users with this role exists throw error
+        public async Task DeleteAsync(string id)
         {
             var role = await _roleManager.FindByIdAsync(id) ?? throw new RoleNotFoundException(id);
+
+            var usersInRole = await _usersManager.GetUsersInRoleAsync(role.Name);
+
+            if (usersInRole.Count() > 0)
+                throw new CannotDeleteRoleException(role.Name);
 
             await _roleManager.DeleteAsync(role);
         }

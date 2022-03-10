@@ -79,7 +79,7 @@ namespace PerfumeManufacturerProject.Controllers
             try
             {
                 var result = await _authService.GetMeAsync();
-                return Ok(result);
+                return Ok(_mapper.Map<LoginResponse>(result));
             }
             catch (Exception e)
             {

@@ -1,8 +1,11 @@
-﻿namespace PerfumeManufacturerProject.Contracts.Auth.Responses
+﻿using PerfumeManufacturerProject.Contracts.Roles.Responses;
+
+namespace PerfumeManufacturerProject.Contracts.Auth.Responses
 {
     public sealed class LoginResponse
     {
         public string Id { get; set; }
         public string UserName { get; set; }
+        public RoleResponse Role { get; set; }
     }
 }

@@ -116,11 +116,15 @@ namespace PerfumeManufacturerProject.Business.Services
 
             user.FirstName = string.IsNullOrEmpty(firstName) ? user.FirstName : firstName;
             user.LastName = string.IsNullOrEmpty(lastName) ? user.LastName : lastName;
-            var result = await _userManager.SetUserNameAsync(user, userName);
 
-            if (!result.Succeeded)
+            if (!string.IsNullOrEmpty(userName))
             {
-                throw new ErrorDuringRegisterException(result.Errors);
+                var result = await _userManager.SetUserNameAsync(user, userName);
+
+                if (!result.Succeeded)
+                {
+                    throw new ErrorDuringRegisterException(result.Errors);
+                }
             }
 
             await _userManager.UpdateAsync(user);
@@ -138,11 +142,15 @@ namespace PerfumeManufacturerProject.Business.Services
 
             user.FirstName = string.IsNullOrEmpty(firstName) ? user.FirstName : firstName;
             user.LastName = string.IsNullOrEmpty(lastName) ? user.LastName : lastName;
-            var result = await _userManager.SetUserNameAsync(user, userName);
 
-            if (!result.Succeeded)
+            if (!string.IsNullOrEmpty(userName))
             {
-                throw new ErrorDuringRegisterException(result.Errors);
+                var result = await _userManager.SetUserNameAsync(user, userName);
+
+                if (!result.Succeeded)
+                {
+                    throw new ErrorDuringRegisterException(result.Errors);
+                }
             }
 
             await _userManager.UpdateAsync(user);
