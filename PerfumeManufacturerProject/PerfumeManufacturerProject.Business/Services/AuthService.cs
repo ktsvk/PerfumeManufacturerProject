@@ -1,12 +1,9 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using PerfumeManufacturerProject.Business.Interfaces.Exceptions;
 using PerfumeManufacturerProject.Business.Interfaces.Exceptions.Auth;
 using PerfumeManufacturerProject.Business.Interfaces.Models.Auth;
-using PerfumeManufacturerProject.Business.Interfaces.Models.Roles;
 using PerfumeManufacturerProject.Business.Interfaces.Services;
-using PerfumeManufacturerProject.Data.Interfaces.Models;
-using System.Linq;
+using PerfumeManufacturerProject.Data.Interfaces.Models.Auth;
 using System.Threading.Tasks;
 
 namespace PerfumeManufacturerProject.Business.Services
@@ -15,31 +12,23 @@ namespace PerfumeManufacturerProject.Business.Services
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly RoleManager<ApplicationRole> _roleManager;
-        private readonly IMapper _mapper;
 
-        public AuthService(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, RoleManager<ApplicationRole> roleManager, IMapper mapper)
+        public AuthService(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;
-            _roleManager = roleManager;
-            _mapper = mapper;
         }
 
         public async Task<LoginResult> LoginAsync(string username, string password)
         {
-            var user = await _userManager.FindByNameAsync(username);
-            if (user != null)
-            {
-                var result = await _signInManager.PasswordSignInAsync(username, password, false, false);
-                if (result.Succeeded)
-                {
-                    var role = await _roleManager.FindByNameAsync((await _userManager.GetRolesAsync(user)).FirstOrDefault());
-                    var roleModel = _mapper.Map<RoleModel>(role);
+            var user = await _userManager.FindByNameAsync(username) ?? throw new InvalidLoginException();
 
-                    return new LoginResult { Id = user.Id, UserName = user.UserName, Role = roleModel };
-                }
+            var result = await _signInManager.PasswordSignInAsync(username, password, false, false);
+            if (result.Succeeded)
+            {
+                return new LoginResult { Id = user.Id, UserName = user.UserName };
             }
+
             throw new InvalidLoginException();
         }
 
@@ -52,6 +41,7 @@ namespace PerfumeManufacturerProject.Business.Services
                 await _signInManager.SignInAsync(user, false);
                 return new LoginResult { Id = user.Id, UserName = user.UserName };
             }
+
             throw new ErrorDuringRegisterException(result.Errors);
         }
 
@@ -60,10 +50,7 @@ namespace PerfumeManufacturerProject.Business.Services
             var userName = _signInManager.Context.User.Identity.Name;
             var user = await _userManager.FindByNameAsync(userName) ?? throw new UserNotFoundException(userName);
 
-            var role = await _roleManager.FindByNameAsync((await _userManager.GetRolesAsync(user)).FirstOrDefault());
-            var roleModel = _mapper.Map<RoleModel>(role);
-
-            return new LoginResult { Id = user.Id, UserName = user.UserName, Role = roleModel };
+            return new LoginResult { Id = user.Id, UserName = user.UserName };
         }
 
         public async Task LogoutAsync() =>

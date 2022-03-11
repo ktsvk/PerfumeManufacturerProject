@@ -6,12 +6,10 @@ namespace PerfumeManufacturerProject.Business.Interfaces.Services
 {
     public interface IUsersService
     {
-        Task<IEnumerable<UserModel>> GetAdminsAsync();
-        Task<IEnumerable<UserModel>> GetUsersAsync();
+        Task<IEnumerable<UserModel>> GetAsync();
         Task<UserModel> GetAsync(string id);
-        Task<UserModel> CreateAsync(string username, string password, string firstName, string lastName, string roleName);
-        Task UpdateAsync(string id, string firstName, string lastName, string userName, string password, string roleName);
-        Task UpdateAdminAsync(string id, string firstName, string lastName, string userName, string Password);
+        Task<UserModel> CreateAsync(string userName, string firstName, string lastName, string password, string roleName);
+        Task UpdateAsync(string id, string userName, string firstName, string lastName, string password, string roleName);
         Task DeleteAsync(string id);
     }
 }

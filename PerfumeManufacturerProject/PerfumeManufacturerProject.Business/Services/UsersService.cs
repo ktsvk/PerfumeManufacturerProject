@@ -1,10 +1,12 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using PerfumeManufacturerProject.Business.Interfaces.Exceptions;
 using PerfumeManufacturerProject.Business.Interfaces.Exceptions.Auth;
 using PerfumeManufacturerProject.Business.Interfaces.Models.Roles;
 using PerfumeManufacturerProject.Business.Interfaces.Models.Users;
 using PerfumeManufacturerProject.Business.Interfaces.Services;
+using PerfumeManufacturerProject.Data.EF;
 using PerfumeManufacturerProject.Data.Interfaces.Models;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,152 +16,97 @@ namespace PerfumeManufacturerProject.Business.Services
 {
     public class UsersService : IUsersService
     {
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly RoleManager<ApplicationRole> _roleManager;
+        private readonly ApplicationDbContext _context;
         private readonly IMapper _mapper;
 
-        public UsersService(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, IMapper mapper)
+        public UsersService(ApplicationDbContext context, IMapper mapper)
         {
-            _userManager = userManager;
-            _roleManager = roleManager;
+            _context = context;
             _mapper = mapper;
         }
 
         public async Task<UserModel> GetAsync(string id)
         {
-            var user = await _userManager.FindByIdAsync(id) ?? throw new UserNotFoundException(id);
+            var user = await _context.Users
+                .Include(x => x.Role)
+                .FirstOrDefaultAsync(x => x.Id.ToString() == id) ?? throw new UserNotFoundException(id);
 
-            var role = await _roleManager.FindByNameAsync((await _userManager.GetRolesAsync(user)).FirstOrDefault());
-            var userModel = _mapper.Map<UserModel>(user);
-            userModel.Role = _mapper.Map<RoleModel>(role);
-            return userModel;
+            return _mapper.Map<UserModel>(user);
         }
 
-        public async Task<IEnumerable<UserModel>> GetAdminsAsync()
+        public async Task<IEnumerable<UserModel>> GetAsync()
         {
-            var userModels = new List<UserModel>();
-            var users = await _userManager.GetUsersInRoleAsync("Admin");
+            var users = await _context.Users
+                .Include(x => x.Role)
+                .OrderBy(x => x.UserName)
+                .ToListAsync();
 
-            foreach (var user in users)
-            {
-                var role = await _roleManager.FindByNameAsync((await _userManager.GetRolesAsync(user)).FirstOrDefault());
-                var roleModel = _mapper.Map<RoleModel>(role);
-                var userModel = _mapper.Map<UserModel>(user);
-                userModel.Role = roleModel;
-                userModels.Add(userModel);
-            }
-            return userModels.OrderBy(x => x.LastName);
+            return _mapper.Map<IEnumerable<UserModel>>(users);
         }
 
-        public async Task<IEnumerable<UserModel>> GetUsersAsync()
+        public async Task<UserModel> CreateAsync(string userName, string firstName, string lastName, string password, string roleName)
         {
-            var userModels = new List<UserModel>();
-
-            var roles = _roleManager.Roles.Where(x => x.Name != "Admin");
-
-            foreach (var role in roles)
+            if (await _context.Users.FirstOrDefaultAsync(x => x.UserName == userName) != null)
             {
-                var users = await _userManager.GetUsersInRoleAsync(role.Name);
-
-                foreach (var user in users)
-                {
-                    var userModel = _mapper.Map<UserModel>(user);
-                    userModel.Role = _mapper.Map<RoleModel>(role);
-                    userModels.Add(userModel);
-                }
+                throw new UserAlreadyExistsException(userName);
             }
 
-            return userModels.OrderBy(x => x.LastName);
+            var role = await _context.Roles.FirstOrDefaultAsync(x => x.Name == roleName) ?? throw new RoleNotFoundException(roleName);
+            var user = new User { UserName = userName, FirstName = firstName, LastName = lastName, PasswordHash = password, Role = role };
+
+            await _context.Users.AddAsync(user);
+            await _context.SaveChangesAsync();
+
+            return _mapper.Map<UserModel>(user);
         }
 
-        public async Task<UserModel> CreateAsync(string username, string password, string firstName, string lastName, string roleName)
+        public async Task UpdateAsync(string id, string userName, string firstName, string lastName, string password, string roleName)
         {
-            if (await _userManager.FindByNameAsync(username) != null)
-            {
-                throw new UserAlreadyExistsException(username);
-            }
-
-            var role = await _roleManager.FindByNameAsync(roleName) ?? throw new RoleNotFoundException(roleName);
-
-            var user = new ApplicationUser { UserName = username, FirstName = firstName, LastName = lastName };
-            var result = await _userManager.CreateAsync(user, password);
-            if (result.Succeeded)
-            {
-                await _userManager.AddToRoleAsync(user, role.Name);
-                await _userManager.UpdateAsync(user);
-
-                var userModel = _mapper.Map<UserModel>(user);
-                userModel.Role = _mapper.Map<RoleModel>(role);
-                return userModel;
-            }
-            throw new ErrorDuringRegisterException(result.Errors);
-        }
-
-        public async Task UpdateAsync(string id, string firstName, string lastName, string userName, string password, string roleName)
-        {
-            var user = await _userManager.FindByIdAsync(id) ?? throw new UserNotFoundException(id);
+            var user = await _context.Users
+                .Include(x => x.Role)
+                .FirstOrDefaultAsync(x => x.Id.ToString() == id) ?? throw new UserNotFoundException(id);
 
             if (!string.IsNullOrEmpty(password))
             {
-                await _userManager.RemovePasswordAsync(user);
-                await _userManager.AddPasswordAsync(user, password);
+                // add check confirmPassword = password
+                // add hash password
+                user.PasswordHash = password;
+                await _context.SaveChangesAsync();
             }
 
             if (!string.IsNullOrEmpty(roleName))
             {
-                var role = await _roleManager.FindByNameAsync(roleName) ?? throw new RoleNotFoundException(roleName);
-                var roles = await _userManager.GetRolesAsync(user);
-
-                await _userManager.RemoveFromRolesAsync(user, roles);
-                await _userManager.AddToRoleAsync(user, role.Name);
+                var role = await _context.Roles.FirstOrDefaultAsync(x => x.Name == roleName) ?? throw new RoleNotFoundException(roleName);
+                user.Role = role;
+                await _context.SaveChangesAsync();
             }
 
             user.FirstName = string.IsNullOrEmpty(firstName) ? user.FirstName : firstName;
             user.LastName = string.IsNullOrEmpty(lastName) ? user.LastName : lastName;
+            await _context.SaveChangesAsync();
 
             if (!string.IsNullOrEmpty(userName))
             {
-                var result = await _userManager.SetUserNameAsync(user, userName);
-
-                if (!result.Succeeded)
+                if (await _context.Users.FirstOrDefaultAsync(x => x.UserName == userName) != null)
                 {
-                    throw new ErrorDuringRegisterException(result.Errors);
+                    throw new System.Exception("this userName already exists"); // add new exception userName already exists
+                }
+                else
+                {
+                    user.UserName = userName;
                 }
             }
 
-            await _userManager.UpdateAsync(user);
-        }
-
-        public async Task UpdateAdminAsync(string id, string firstName, string lastName, string userName, string password)
-        {
-            var user = await _userManager.FindByIdAsync(id) ?? throw new UserNotFoundException(id);
-
-            if (!string.IsNullOrEmpty(password))
-            {
-                await _userManager.RemovePasswordAsync(user);
-                await _userManager.AddPasswordAsync(user, password);
-            }
-
-            user.FirstName = string.IsNullOrEmpty(firstName) ? user.FirstName : firstName;
-            user.LastName = string.IsNullOrEmpty(lastName) ? user.LastName : lastName;
-
-            if (!string.IsNullOrEmpty(userName))
-            {
-                var result = await _userManager.SetUserNameAsync(user, userName);
-
-                if (!result.Succeeded)
-                {
-                    throw new ErrorDuringRegisterException(result.Errors);
-                }
-            }
-
-            await _userManager.UpdateAsync(user);
+            await _context.SaveChangesAsync();
         }
 
         public async Task DeleteAsync(string id)
         {
-            var user = await _userManager.FindByIdAsync(id) ?? throw new UserNotFoundException(id);
-            await _userManager.DeleteAsync(user);
+            var user = await _context.Users
+                .FirstOrDefaultAsync(x => x.Id.ToString() == id) ?? throw new UserNotFoundException(id);
+
+            _context.Users.Remove(user);
+            await _context.SaveChangesAsync();
         }
     }
 }

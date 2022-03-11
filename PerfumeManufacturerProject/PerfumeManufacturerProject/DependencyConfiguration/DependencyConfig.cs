@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -8,7 +9,7 @@ using PerfumeManufacturerProject.Business.Interfaces.Mapping;
 using PerfumeManufacturerProject.Business.Interfaces.Services;
 using PerfumeManufacturerProject.Business.Services;
 using PerfumeManufacturerProject.Data.EF;
-using PerfumeManufacturerProject.Data.Interfaces.Models;
+using PerfumeManufacturerProject.Data.Interfaces.Models.Auth;
 using Serilog;
 using System.Net;
 using System.Threading.Tasks;
@@ -32,13 +33,15 @@ namespace PerfumeManufacturerProject.DependencyConfiguration
         {
             services.AddTransient<IAuthService, AuthService>();
             services.AddTransient<IUsersService, UsersService>();
+            services.AddTransient<IAdminService, AdminService>();
             services.AddTransient<IRolesService, RolesService>();
         }
 
         public static void AddDataExtensions(IServiceCollection services, IConfiguration config)
         {
             services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(config.GetConnectionString("DefaultConnection")));
-            services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
+            services.AddDbContext<AuthDbContext>(options => options.UseSqlServer(config.GetConnectionString("AuthConnection")));
+            services.AddIdentity<ApplicationUser, IdentityRole>(options =>
             {
                 options.SignIn.RequireConfirmedAccount = false;
                 options.Password.RequireDigit = false;
@@ -47,11 +50,11 @@ namespace PerfumeManufacturerProject.DependencyConfiguration
                 options.Password.RequireNonAlphanumeric = false;
                 options.Password.RequireUppercase = false;
             })
-                .AddEntityFrameworkStores<ApplicationDbContext>();
+                .AddEntityFrameworkStores<AuthDbContext>();
 
             services.ConfigureApplicationCookie(options =>
             {
-                options.Cookie.Name = "PerfumeAppCookie";
+                options.Cookie.Name = "PerfumeAuthCookie";
                 options.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.None;
                 options.Events = new CookieAuthenticationEvents
                 {

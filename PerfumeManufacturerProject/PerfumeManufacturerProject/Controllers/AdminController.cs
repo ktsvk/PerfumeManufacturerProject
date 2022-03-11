@@ -17,13 +17,13 @@ namespace PerfumeManufacturerProject.Controllers
     [Route("[controller]")]
     public class AdminController : ControllerBase
     {
-        private readonly IUsersService _usersService;
+        private readonly IAdminService _adminService;
         private readonly IMapper _mapper;
         private readonly ILogger<AdminController> _logger;
 
-        public AdminController(IUsersService usersService, IMapper mapper, ILogger<AdminController> logger)
+        public AdminController(IAdminService adminService, IMapper mapper, ILogger<AdminController> logger)
         {
-            _usersService = usersService;
+            _adminService = adminService;
             _mapper = mapper;
             _logger = logger;
         }
@@ -34,7 +34,7 @@ namespace PerfumeManufacturerProject.Controllers
         {
             try
             {
-                var result = await _usersService.GetAsync(id);
+                var result = await _adminService.GetAsync(id);
                 return Ok(_mapper.Map<AdminResponse>(result));
             }
             catch (Exception e)
@@ -49,7 +49,7 @@ namespace PerfumeManufacturerProject.Controllers
         {
             try
             {
-                var result = await _usersService.GetAdminsAsync();
+                var result = await _adminService.GetAsync();
                 return Ok(_mapper.Map<IEnumerable<AdminResponse>>(result));
             }
             catch (Exception e)
@@ -64,7 +64,7 @@ namespace PerfumeManufacturerProject.Controllers
         {
             try
             {
-                var result = await _usersService.CreateAsync(request.UserName, request.Password, request.FirstName, request.LastName, "Admin");
+                var result = await _adminService.CreateAsync(request.UserName, request.FirstName, request.LastName, request.Password);
                 return Ok(_mapper.Map<AdminResponse>(result));
             }
             catch (Exception e)
@@ -79,7 +79,7 @@ namespace PerfumeManufacturerProject.Controllers
         {
             try
             {
-                await _usersService.UpdateAdminAsync(request.Id, request.FirstName, request.LastName, request.UserName, request.Password);
+                await _adminService.UpdateAsync(request.Id, request.UserName, request.FirstName, request.LastName, request.Password);
                 return NoContent();
             }
             catch (Exception e)
@@ -94,7 +94,7 @@ namespace PerfumeManufacturerProject.Controllers
         {
             try
             {
-                await _usersService.DeleteAsync(id);
+                await _adminService.DeleteAsync(id);
                 return NoContent();
             }
             catch (Exception e)

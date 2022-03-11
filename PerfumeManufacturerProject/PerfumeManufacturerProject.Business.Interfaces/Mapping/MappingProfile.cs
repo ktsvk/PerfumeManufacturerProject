@@ -7,6 +7,7 @@ using PerfumeManufacturerProject.Contracts.Auth.Responses;
 using PerfumeManufacturerProject.Contracts.Roles.Responses;
 using PerfumeManufacturerProject.Contracts.Users.Responses;
 using PerfumeManufacturerProject.Contracts.Admin.Responses;
+using PerfumeManufacturerProject.Data.Interfaces.Models.Auth;
 
 namespace PerfumeManufacturerProject.Business.Interfaces.Mapping
 {
@@ -20,8 +21,9 @@ namespace PerfumeManufacturerProject.Business.Interfaces.Mapping
 
         private void DataModelsToServiceResultMaps()
         {
-            CreateMap<ApplicationRole, RoleModel>();
-            CreateMap<ApplicationUser, UserModel>();
+            CreateMap<ApplicationUser, AdminModel>();
+            CreateMap<User, UserModel>();
+            CreateMap<Role, RoleModel>();
             CreateMap<Permission, PermissionModel>();
         }
 
@@ -29,9 +31,9 @@ namespace PerfumeManufacturerProject.Business.Interfaces.Mapping
         {
             CreateMap<LoginResult, LoginResponse>();
 
-            CreateMap<RoleModel, RoleResponse>();
+            CreateMap<AdminModel, AdminResponse>();
             CreateMap<UserModel, UserResponse>();
-            CreateMap<UserModel, AdminResponse>();
+            CreateMap<RoleModel, RoleResponse>();
             CreateMap<PermissionModel, PermissionResponse>();
         }
     }

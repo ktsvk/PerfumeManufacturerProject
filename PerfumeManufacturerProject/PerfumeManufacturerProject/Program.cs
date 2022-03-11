@@ -5,7 +5,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using PerfumeManufacturerProject.Data;
 using PerfumeManufacturerProject.Data.EF;
-using PerfumeManufacturerProject.Data.Interfaces.Models;
+using PerfumeManufacturerProject.Data.Interfaces.Models.Auth;
 using System;
 using System.Threading.Tasks;
 
@@ -24,8 +24,7 @@ namespace PerfumeManufacturerProject
                 {
                     var context = services.GetRequiredService<ApplicationDbContext>();
                     var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
-                    var rolesManager = services.GetRequiredService<RoleManager<ApplicationRole>>();
-                    await DbInitializer.InitializeAsync(context, userManager, rolesManager);
+                    await DbInitializer.InitializeAsync(context, userManager);
                 }
                 catch (Exception ex)
                 {

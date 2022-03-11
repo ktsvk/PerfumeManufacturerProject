@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using PerfumeManufacturerProject.Data.EF;
 using PerfumeManufacturerProject.Data.Interfaces.Models;
+using PerfumeManufacturerProject.Data.Interfaces.Models.Auth;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -10,7 +11,7 @@ namespace PerfumeManufacturerProject.Data
     public static class DbInitializer
     {
 
-        public static async Task InitializeAsync(ApplicationDbContext context, UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager)
+        public static async Task InitializeAsync(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
         {
             if ((await context.Permissions.ToListAsync()).Count <= 0)
             {
@@ -28,19 +29,17 @@ namespace PerfumeManufacturerProject.Data
             if ((await context.Roles.ToListAsync()).Count <= 0)
             {
                 var permissions = await context.Permissions.ToListAsync();
-                await roleManager.CreateAsync(new ApplicationRole { Name = "Admin", Permissions = permissions.Where(x => x.Name == "Page1" || x.Name == "Page2").ToList() });
-                await roleManager.CreateAsync(new ApplicationRole { Name = "Salesman", Permissions = permissions.Where(x => x.Name == "Page3" || x.Name == "Page5").ToList() });
-                await roleManager.CreateAsync(new ApplicationRole { Name = "Manager", Permissions = permissions.Where(x => x.Name == "Page6" || x.Name == "Page8").ToList() });
-                await roleManager.CreateAsync(new ApplicationRole { Name = "User", Permissions = permissions.Where(x => x.Name == "Page4" || x.Name == "Page7" || x.Name == "Page1").ToList() });
+                await context.Roles.AddRangeAsync(
+                    new Role { Name = "Salesman", Permissions = permissions.Where(x => x.Name == "Page3" || x.Name == "Page5").ToList() },
+                    new Role { Name = "Manager", Permissions = permissions.Where(x => x.Name == "Page6" || x.Name == "Page8").ToList() },
+                    new Role { Name = "User", Permissions = permissions.Where(x => x.Name == "Page4" || x.Name == "Page7" || x.Name == "Page1").ToList() }
+                    );
+                await context.SaveChangesAsync();
             }
             if (await userManager.FindByEmailAsync("admin") == null)
             {
                 var admin = new ApplicationUser { UserName = "admin" };
                 var result = await userManager.CreateAsync(admin, "admin");
-                if (result.Succeeded)
-                {
-                    await userManager.AddToRoleAsync(admin, "Admin");
-                }
             }
         }
     }

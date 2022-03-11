@@ -5,17 +5,19 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PerfumeManufacturerProject.Data.Interfaces.Models
 {
-    public class Permission
+    [Table("Roles")]
+    public class Role
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid Id { get; set; }
         public string Name { get; set; }
-        public ICollection<Role> Roles { get; set; }
+        public ICollection<User> Users { get; set; }
+        public ICollection<Permission> Permissions { get; set; }
 
-        public Permission()
+        public Role()
         {
-            Roles = new List<Role>();
+            Permissions = new List<Permission>();
         }
     }
 }

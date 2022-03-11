@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
-namespace PerfumeManufacturerProject.Data.Interfaces.Models
+namespace PerfumeManufacturerProject.Data.Interfaces.Models.Auth
 {
     public class ApplicationUser : IdentityUser
     {

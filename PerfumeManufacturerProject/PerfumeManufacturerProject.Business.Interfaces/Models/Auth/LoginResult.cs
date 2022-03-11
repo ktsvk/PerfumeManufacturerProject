@@ -6,6 +6,5 @@ namespace PerfumeManufacturerProject.Business.Interfaces.Models.Auth
     {
         public string Id { get; set; }
         public string UserName { get; set; }
-        public RoleModel Role { get; set; }
     }
 }

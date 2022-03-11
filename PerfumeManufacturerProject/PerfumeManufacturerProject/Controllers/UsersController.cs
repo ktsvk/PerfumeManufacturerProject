@@ -49,7 +49,7 @@ namespace PerfumeManufacturerProject.Controllers
         {
             try
             {
-                var result = await _usersService.GetUsersAsync();
+                var result = await _usersService.GetAsync();
                 return Ok(_mapper.Map<IEnumerable<UserResponse>>(result));
             }
             catch (Exception e)
@@ -64,7 +64,7 @@ namespace PerfumeManufacturerProject.Controllers
         {
             try
             {
-                var result = await _usersService.CreateAsync(request.UserName, request.Password, request.FirstName, request.LastName, request.RoleName);
+                var result = await _usersService.CreateAsync(request.UserName, request.FirstName, request.LastName, request.Password, request.RoleName);
                 return Ok(_mapper.Map<UserResponse>(result));
             }
             catch (Exception e)
@@ -79,7 +79,7 @@ namespace PerfumeManufacturerProject.Controllers
         {
             try
             {
-                await _usersService.UpdateAsync(request.Id, request.FirstName, request.LastName, request.UserName, request.Password, request.RoleName);
+                await _usersService.UpdateAsync(request.Id, request.UserName, request.FirstName, request.LastName, request.Password, request.RoleName);
                 return NoContent();
             }
             catch (Exception e)

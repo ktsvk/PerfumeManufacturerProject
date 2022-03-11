@@ -6,6 +6,5 @@ namespace PerfumeManufacturerProject.Contracts.Auth.Responses
     {
         public string Id { get; set; }
         public string UserName { get; set; }
-        public RoleResponse Role { get; set; }
     }
 }
