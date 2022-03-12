@@ -11,6 +11,7 @@ using PerfumeManufacturerProject.Data.Interfaces.Models;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using BCryptModule = BCrypt.Net.BCrypt;
 
 namespace PerfumeManufacturerProject.Business.Services
 {
@@ -52,7 +53,10 @@ namespace PerfumeManufacturerProject.Business.Services
             }
 
             var role = await _context.Roles.FirstOrDefaultAsync(x => x.Name == roleName) ?? throw new RoleNotFoundException(roleName);
-            var user = new User { UserName = userName, FirstName = firstName, LastName = lastName, PasswordHash = password, Role = role };
+
+            var passwordHash = BCryptModule.HashPassword(password);
+
+            var user = new User { UserName = userName, FirstName = firstName, LastName = lastName, PasswordHash = passwordHash, Role = role };
 
             await _context.Users.AddAsync(user);
             await _context.SaveChangesAsync();
@@ -68,9 +72,9 @@ namespace PerfumeManufacturerProject.Business.Services
 
             if (!string.IsNullOrEmpty(password))
             {
-                // add check confirmPassword = password
-                // add hash password
-                user.PasswordHash = password;
+                var passwordHash = BCryptModule.HashPassword(password);
+
+                user.PasswordHash = passwordHash;
                 await _context.SaveChangesAsync();
             }
 
